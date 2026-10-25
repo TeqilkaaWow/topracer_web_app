@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Регистрация - TopRace Z7{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <h1 class="auth-title">🚀 Регистрация</h1>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Чистая форма без JS-обработчиков -->
+        <form method="POST" action="{{ url_for('register') }}" class="auth-form">
+            <div class="form-group">
+                <label for="nickname">Имя</label>
+                <input type="text" id="nickname" name="nickname" required
+                       placeholder="Ваше Имя" class="form-input"
+                       value="{{ request.form.nickname if request.form.nickname else '' }}">
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Номер телефона</label>
+                <input type="tel" id="phone" name="phone" required
+                       placeholder="+7 (912) 345-67-89" class="form-input"
+                       value="{{ request.form.phone if request.form.phone else '' }}">
+            </div>
+
+            <div class="form-group">
+                <label for="password">Пароль</label>
+                <input type="password" id="password" name="password" required
+                       minlength="6" class="form-input">
+            </div>
+
+            <div class="form-group">
+                <label for="password_confirm">Подтвердите пароль</label>
+                <input type="password" id="password_confirm" name="password_confirm" required
+                       minlength="6" class="form-input">
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block">
+                Зарегистрироваться
+            </button>
+        </form>
+
+        <div class="auth-footer">
+            <p>Уже есть аккаунт? <a href="{{ url_for('login') }}">Войти</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

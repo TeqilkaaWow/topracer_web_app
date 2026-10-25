@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+
+{% block title %}Реферальная программа - TopRace Z7{% endblock %}
+
+{% block content %}
+<div class="referral-page">
+    <h1>👥 Реферальная программа</h1>
+
+    <div class="referral-card">
+        <h2>🎁 Приглашай друзей - получай бонусы!</h2>
+        <p class="referral-desc">
+            За каждого приглашённого друга ты получаешь:
+            <strong>+{{ stats.total_coins_earned or 200 }} TC</strong> и
+            <strong>+{{ stats.total_minutes_earned or 15 }} минут</strong>
+        </p>
+
+        <div class="referral-code-box">
+            <label>Твой реферальный код:</label>
+            <div class="code-display">
+                <code id="referral-code">{{ code }}</code>
+                <button onclick="copyCode()" class="btn btn-small"> Копировать</button>
+            </div>
+        </div>
+
+        <div class="referral-link-box">
+            <label>Реферальная ссылка:</label>
+            <div class="link-display">
+                <input type="text" id="referral-link" value="{{ link }}" readonly>
+                <button onclick="copyLink()" class="btn btn-small">📋 Копировать</button>
+            </div>
+        </div>
+
+        <div class="share-buttons">
+            <a href="https://t.me/share/url?url={{ link }}&text=Присоединяйся к TopRace Z7!"
+               class="btn btn-telegram" target="_blank">
+                📱 Поделиться в Telegram
+            </a>
+            <a href="https://wa.me/?text={{ link }}"
+               class="btn btn-whatsapp" target="_blank">
+                💬 Поделиться в WhatsApp
+            </a>
+        </div>
+    </div>
+
+    <div class="referral-stats">
+        <h2>📊 Твоя статистика</h2>
+        <div class="stats-grid">
+            <div class="stat-box">
+                <div class="stat-number">{{ stats.total_referrals }}</div>
+                <div class="stat-label">Приглашено друзей</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">{{ stats.total_coins_earned }}</div>
+                <div class="stat-label">TC заработано</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">{{ stats.total_minutes_earned }}</div>
+                <div class="stat-label">Минут заработано</div>
+            </div>
+        </div>
+    </div>
+
+    {% if stats.recent_referrals %}
+    <div class="recent-referrals">
+        <h2>🕐 Последние приглашения</h2>
+        <div class="referrals-list">
+            {% for ref in stats.recent_referrals %}
+            <div class="referral-item">
+                <span class="ref-date">{{ ref.date[:10] }}</span>
+                <span class="ref-bonus">+{{ ref.coins }} TC, +{{ ref.minutes }} мин</span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+function copyCode() {
+    const code = document.getElementById('referral-code').textContent;
+    navigator.clipboard.writeText(code);
+    alert('✅ Код скопирован: ' + code);
+}
+
+function copyLink() {
+    const link = document.getElementById('referral-link').value;
+    navigator.clipboard.writeText(link);
+    alert('✅ Ссылка скопирована!');
+}
+</script>
+
+<style>
+.referral-page { color: white; }
+.referral-page h1 { margin-bottom: 30px; }
+.referral-card, .referral-stats, .recent-referrals {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    margin-bottom: 20px;
+    color: #333;
+}
+.referral-desc { font-size: 18px; margin-bottom: 20px; }
+.code-display, .link-display {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-top: 10px;
+}
+.code-display code {
+    font-size: 24px;
+    background: #f0f0f0;
+    padding: 15px 25px;
+    border-radius: 10px;
+    flex: 1;
+    text-align: center;
+    font-weight: bold;
+    color: #0088cc;
+}
+.link-display input {
+    flex: 1;
+    padding: 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 14px;
+}
+.share-buttons {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+.btn-telegram { background: #0088cc; color: white; }
+.btn-whatsapp { background: #25D366; color: white; }
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 20px;
+}
+.stat-box {
+    text-align: center;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 10px;
+}
+.stat-number {
+    font-size: 36px;
+    font-weight: bold;
+    color: #0088cc;
+}
+.referral-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    border-bottom: 1px solid #e0e0e0;
+}
+</style>
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Панель администратора - TopRace Z7{% endblock %}
+
+{% block content %}
+<div class="admin-dashboard">
+    <h1>👑 Панель администратора</h1>
+
+    <div class="admin-stats">
+        <div class="admin-stat-card">
+            <div class="stat-icon">👥</div>
+            <div class="stat-value">{{ total_users }}</div>
+            <div class="stat-label">Всего пользователей</div>
+        </div>
+        <div class="admin-stat-card">
+            <div class="stat-icon">🎯</div>
+            <div class="stat-value">{{ total_visits }}</div>
+            <div class="stat-label">Всего посещений</div>
+        </div>
+        <div class="admin-stat-card">
+            <div class="stat-icon">👑</div>
+            <div class="stat-value">{{ admin_count }}</div>
+            <div class="stat-label">Администраторов</div>
+        </div>
+    </div>
+
+    <div class="admin-actions">
+    <h2>⚡ Быстрые действия</h2>
+    <div class="actions-grid">
+        <a href="{{ url_for('admin_register_user') }}" class="admin-action-card">
+            <span class="action-icon">👤</span>
+            <span class="action-text">Зарегистрировать пользователя</span>
+        </a>
+        <a href="{{ url_for('admin_users_list') }}" class="admin-action-card">
+            <span class="action-icon"></span>
+            <span class="action-text">Список пользователей</span>
+        </a>
+        <a href="{{ url_for('admin_scan') }}" class="admin-action-card">
+            <span class="action-icon">📱</span>
+            <span class="action-text">Сканировать QR</span>
+        </a>
+        <a href="{{ url_for('admin_promote_user') }}" class="admin-action-card">
+            <span class="action-icon">👑</span>
+            <span class="action-text">Назначить админа</span>
+        </a>
+    </div>
+</div>
+</div>
+{% endblock %}

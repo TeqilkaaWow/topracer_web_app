@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}Запись времени круга - TopRace Z7{% endblock %}
+
+{% block content %}
+<div class="add-lap-time-page">
+    <h1>️ Запись времени круга</h1>
+
+    <div class="user-info-card">
+        <h2>Пользователь: {{ nickname }}</h2>
+    </div>
+
+    <div class="lap-time-form-card">
+        <form method="POST" class="auth-form">
+            <div class="form-group">
+                <label for="track">Трасса</label>
+                <select id="track" name="track" required class="form-input">
+                    <option value="">Выберите трассу</option>
+                    {% for key, track in tracks.items() %}
+                    <option value="{{ key }}">{{ track.emoji }} {{ track.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="lap_time">Время круга</label>
+                <input type="text" id="lap_time" name="lap_time" required
+                       placeholder="MM:SS.ms или SS.ms (например: 1:23.456)"
+                       class="form-input">
+                <small class="form-help">Формат: минуты:секунды.миллисекунды</small>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary btn-block">Сохранить время</button>
+                <a href="{{ url_for('admin_user_detail', user_id=user_id) }}" class="btn btn-secondary btn-block">Отмена</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+.add-lap-time-page {
+    color: white;
+    padding: 20px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.add-lap-time-page h1 {
+    margin-bottom: 30px;
+}
+
+.user-info-card, .lap-time-form-card {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+.user-info-card h2 {
+    color: #0088cc;
+    margin: 0;
+}
+
+.form-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.form-actions .btn {
+    flex: 1;
+}
+</style>
+{% endblock %}

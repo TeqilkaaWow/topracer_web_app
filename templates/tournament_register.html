@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Регистрация на турнир - TopRace Z7{% endblock %}
+
+{% block content %}
+<div class="tournament-register-page">
+    <h1>{{ tournament.emoji }} Регистрация на {{ tournament.name }}</h1>
+
+    <div class="tournament-info-card">
+        <div class="info-content">
+            {{ tournament.description|safe }}
+        </div>
+    </div>
+
+    <form method="POST" class="registration-form">
+        <div class="form-group">
+            <label for="name">Ваше имя</label>
+            <input type="text" id="name" name="name" required
+                   placeholder="Введите полное имя" class="form-input">
+        </div>
+
+        <div class="form-group">
+            <label for="phone">Номер телефона</label>
+            <input type="tel" id="phone" name="phone" required
+                   placeholder="+7 (912) 345-67-89" class="form-input">
+        </div>
+
+        <div class="form-group">
+            <label>Выберите филиал</label>
+            <div class="branch-selector">
+                {% for key, branch in branches.items() %}
+                <label class="branch-option">
+                    <input type="radio" name="branch" value="{{ key }}" required>
+                    <div class="branch-card">
+                        <div class="branch-name">{{ branch.name }}</div>
+                        <div class="branch-address">{{ branch.address }}</div>
+                    </div>
+                </label>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary btn-large">Зарегистрироваться</button>
+            <a href="{{ url_for('tournaments') }}" class="btn btn-secondary">Отмена</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

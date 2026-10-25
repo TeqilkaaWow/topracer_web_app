@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Сканирование - TopRace Z7{% endblock %}
+
+{% block content %}
+<div class="admin-scan">
+    <h1>📷 Сканирование пользователя</h1>
+
+    <form method="POST" class="scan-form">
+        <div class="form-group">
+            <label for="identifier">ID пользователя, TopRacer ID или телефон</label>
+            <input type="text" id="identifier" name="identifier" required
+                   placeholder="Введите ID или телефон" class="form-input">
+        </div>
+
+        <div class="form-group">
+            <label>Действие</label>
+            <select name="action" class="form-input">
+                <option value="visit">✅ Засчитать посещение</option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-large">Выполнить</button>
+    </form>
+</div>
+{% endblock %}

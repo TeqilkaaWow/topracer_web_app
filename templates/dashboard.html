@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}Личный кабинет - TopRace Z7{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <div class="welcome-card">
+    <div class="welcome-header">
+        {% if avatar_url %}
+            <img src="{{ avatar_url }}" alt="Аватар" class="dashboard-avatar">
+        {% else %}
+            <div class="dashboard-avatar-default">
+                {{ nickname[0]|upper if nickname else '?' }}
+            </div>
+        {% endif %}
+        <div class="welcome-text">
+            <h1>👋 Привет, {{ nickname }}!</h1>
+            <p class="welcome-subtitle">Добро пожаловать в систему лояльности TopRace Z7</p>
+        </div>
+    </div>
+</div>
+
+    <div class="stats-grid">
+        <div class="stat-card primary">
+            <div class="stat-icon">💰</div>
+            <div class="stat-content">
+                <div class="stat-value">{{ topcoins }} TC</div>
+                <div class="stat-label">TopCoins</div>
+            </div>
+        </div>
+
+        <div class="stat-card secondary">
+            <div class="stat-icon">⏰</div>
+            <div class="stat-content">
+                <div class="stat-value">{{ bonus_minutes }} мин</div>
+                <div class="stat-label">Бонусные минуты</div>
+                {% if bonus_expiry %}
+                <div class="stat-sub">до {{ bonus_expiry }}</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="stat-card accent">
+            <div class="stat-icon">🔢</div>
+            <div class="stat-content">
+                <div class="stat-value">#{{ tracerdb_id }}</div>
+                <div class="stat-label">TopRacer ID</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="quick-actions">
+        <h2>⚡ Быстрые действия</h2>
+        <div class="actions-grid">
+            <a href="{{ url_for('qr_code') }}" class="action-card">
+                <div class="action-icon">📱</div>
+                <div class="action-text">Мой QR-код</div>
+            </a>
+            <a href="{{ url_for('stats') }}" class="action-card">
+                <div class="action-icon">📊</div>
+                <div class="action-text">Статистика</div>
+            </a>
+            <a href="{{ url_for('history') }}" class="action-card">
+                <div class="action-icon">📋</div>
+                <div class="action-text">История</div>
+            </a>
+            <a href="{{ url_for('tournaments') }}" class="action-card">
+                <div class="action-icon">🏆</div>
+                <div class="action-text">Турниры</div>
+            </a>
+            <a href="{{ url_for('booking') }}" class="action-card">
+                <div class="action-icon">📝</div>
+                <div class="action-text">Запись</div>
+            </a>
+            <a href="{{ url_for('records') }}" class="action-card">
+                <div class="action-icon">🏎️</div>
+                <div class="action-text">Рекорды</div>
+            </a>
+                        <a href="{{ url_for('edit_profile') }}" class="action-card">
+                <div class="action-icon">✏️</div>
+                <div class="action-text">Редактировать</div>
+            </a>
+            <a href="{{ url_for('change_password') }}" class="action-card">
+                <div class="action-icon">🔐</div>
+                <div class="action-text">Сменить пароль</div>
+            </a>
+            {% if current_user.is_admin %}
+            <a href="{{ url_for('admin_panel') }}" class="action-card">
+                <div class="action-icon">👑</div>
+                <div class="action-text">Админка</div>
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

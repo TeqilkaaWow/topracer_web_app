@@ -1,0 +1,394 @@
+{% extends "base.html" %}
+
+{% block title %}Новости - TopRace Z7{% endblock %}
+
+{% block content %}
+<div class="news-feed-page">
+    <div class="news-header">
+        <h1>📰 Лента новостей</h1>
+        {% if current_user.is_admin %}
+        <a href="{{ url_for('create_news_post') }}" class="btn btn-primary">
+            ️ Создать пост
+        </a>
+        {% endif %}
+    </div>
+
+    {% if posts %}
+    <div class="news-list">
+        {% for post in posts %}
+        <div class="news-post">
+            <div class="post-header">
+                <div class="post-author-avatar">
+                    {% if post.author_id %}
+                    <img src="/static/uploads/avatars/avatar_{{ post.author_id }}.png"
+                         alt="{{ post.author_name }}"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div class="avatar-fallback" style="display: none;">
+                        {{ post.author_name[0]|upper }}
+                    </div>
+                    {% else %}
+                    <div class="avatar-fallback">
+                        {{ post.author_name[0]|upper }}
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="post-author-info">
+                    <div class="post-author-name">{{ post.author_name }}</div>
+                    <div class="post-date">{{ post.created_at[:16]|replace('T', ' ') }}</div>
+                </div>
+                {% if current_user.is_admin %}
+                <form method="POST" action="{{ url_for('delete_news_post', post_id=post.id) }}"
+                      style="margin-left: auto;"
+                      onsubmit="return confirm('Удалить этот пост?');">
+                    <button type="submit" class="btn-icon" title="Удалить пост">🗑️</button>
+                </form>
+                {% endif %}
+            </div>
+
+            <div class="post-content">
+                {{ post.content|replace('\n', '<br>')|safe }}
+            </div>
+
+            {% if post.image_path %}
+            <div class="post-image">
+                <img src="{{ post.image_path }}" alt="Изображение поста">
+            </div>
+            {% endif %}
+
+            <div class="post-actions">
+                <button class="action-btn like-btn {% if post.is_liked %}liked{% endif %}"
+                        onclick="toggleLike({{ post.id }})">
+                    <span class="like-icon">{{ '❤️' if post.is_liked else '🤍' }}</span>
+                    <span class="like-count">{{ post.likes_count }}</span>
+                </button>
+
+                <button class="action-btn comment-btn" onclick="toggleComments({{ post.id }})">
+                    <span class="comment-icon">💬</span>
+                    <span class="comment-count">{{ post.comments_count }}</span>
+                </button>
+            </div>
+
+            <div class="post-comments" id="comments-{{ post.id }}" style="display: none;">
+                <div class="comments-list">
+                    {% for comment in post.comments %}
+                    <div class="comment-item">
+                        <div class="comment-author">{{ comment.user_name }}</div>
+                        <div class="comment-content">{{ comment.content }}</div>
+                        <div class="comment-date">{{ comment.created_at[:16]|replace('T', ' ') }}</div>
+                        {% if current_user.is_admin or comment.user_id == current_user.id %}
+                        <form method="POST" action="{{ url_for('delete_news_comment', comment_id=comment.id) }}"
+                              style="display: inline;"
+                              onsubmit="return confirm('Удалить комментарий?');">
+                            <button type="submit" class="btn-link">Удалить</button>
+                        </form>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <form method="POST" action="{{ url_for('comment_news_post', post_id=post.id) }}" class="comment-form">
+                    <input type="text" name="content" placeholder="Написать комментарий..."
+                           class="form-input" required maxlength="1000">
+                    <button type="submit" class="btn btn-small btn-primary">Отправить</button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon">📰</div>
+        <h2>Новостей пока нет</h2>
+        <p>Следите за обновлениями!</p>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+function toggleLike(postId) {
+    fetch(`/news/${postId}/like`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Обновляем UI
+            const likeBtn = event.currentTarget;
+            const likeIcon = likeBtn.querySelector('.like-icon');
+            const likeCount = likeBtn.querySelector('.like-count');
+
+            likeIcon.textContent = data.liked ? '❤️' : '🤍';
+            likeCount.textContent = data.likes_count;
+
+            if (data.liked) {
+                likeBtn.classList.add('liked');
+            } else {
+                likeBtn.classList.remove('liked');
+            }
+        }
+    })
+    .catch(error => console.error('Ошибка:', error));
+}
+
+function toggleComments(postId) {
+    const commentsSection = document.getElementById(`comments-${postId}`);
+    if (commentsSection.style.display === 'none') {
+        commentsSection.style.display = 'block';
+    } else {
+        commentsSection.style.display = 'none';
+    }
+}
+</script>
+
+<style>
+.news-feed-page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    color: white;
+}
+
+.news-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.news-header h1 {
+    margin: 0;
+}
+
+.news-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.news-post {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.post-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.post-author-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.post-author-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatar-fallback {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 24px;
+}
+
+.post-author-info {
+    flex: 1;
+}
+
+.post-author-name {
+    font-weight: bold;
+    color: #0088cc;
+    font-size: 16px;
+}
+
+.post-date {
+    font-size: 12px;
+    color: #999;
+    margin-top: 3px;
+}
+
+.post-content {
+    font-size: 16px;
+    line-height: 1.6;
+    color: #333;
+    margin-bottom: 20px;
+    white-space: pre-wrap;
+}
+
+.post-image {
+    margin-bottom: 20px;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.post-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.post-actions {
+    display: flex;
+    gap: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #e0e0e0;
+}
+
+.action-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border: none;
+    background: #f0f0f0;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 14px;
+}
+
+.action-btn:hover {
+    background: #e0e0e0;
+}
+
+.like-btn.liked {
+    background: #ffe0e0;
+}
+
+.like-btn.liked:hover {
+    background: #ffd0d0;
+}
+
+.post-comments {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #e0e0e0;
+}
+
+.comments-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 20px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.comment-item {
+    background: #f8f9fa;
+    padding: 12px 15px;
+    border-radius: 10px;
+}
+
+.comment-author {
+    font-weight: bold;
+    color: #0088cc;
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+.comment-content {
+    color: #333;
+    font-size: 14px;
+    line-height: 1.4;
+    margin-bottom: 5px;
+}
+
+.comment-date {
+    font-size: 11px;
+    color: #999;
+}
+
+.btn-link {
+    background: none;
+    border: none;
+    color: #dc3545;
+    cursor: pointer;
+    font-size: 12px;
+    padding: 0;
+    margin-top: 5px;
+}
+
+.btn-link:hover {
+    text-decoration: underline;
+}
+
+.comment-form {
+    display: flex;
+    gap: 10px;
+}
+
+.comment-form .form-input {
+    flex: 1;
+    padding: 10px 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 20px;
+    font-size: 14px;
+}
+
+.btn-icon {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 5px;
+    opacity: 0.6;
+    transition: opacity 0.3s;
+}
+
+.btn-icon:hover {
+    opacity: 1;
+}
+
+@media (max-width: 768px) {
+    .news-feed-page {
+        padding: 15px;
+    }
+
+    .news-header {
+        flex-direction: column;
+        gap: 15px;
+        align-items: stretch;
+    }
+
+    .news-header .btn {
+        width: 100%;
+    }
+
+    .news-post {
+        padding: 20px;
+    }
+
+    .post-actions {
+        flex-wrap: wrap;
+    }
+
+    .comment-form {
+        flex-direction: column;
+    }
+
+    .comment-form .btn {
+        width: 100%;
+    }
+}
+</style>
+{% endblock %}

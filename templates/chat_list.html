@@ -1,0 +1,198 @@
+{% extends "base.html" %}
+
+{% block title %}Чаты - TopRace Z7{% endblock %}
+
+{% block content %}
+<div class="chat-list-page">
+    <h1>💬 Мои чаты</h1>
+
+    {% if chats %}
+    <div class="chats-container">
+        {% for chat in chats %}
+        <a href="{{ url_for('chat_room', friend_id=chat.friend_id) }}" class="chat-item">
+            <div class="chat-avatar">
+                {% if chat.online %}
+                <span class="online-indicator"></span>
+                {% endif %}
+                <span class="avatar-letter">{{ chat.nickname[0]|upper }}</span>
+            </div>
+            <div class="chat-info">
+                <div class="chat-header">
+                    <span class="chat-name">{{ chat.nickname }}</span>
+                    <span class="chat-time">{{ chat.last_message_time[:16] if chat.last_message_time else '' }}</span>
+                </div>
+                <div class="chat-preview">
+                    <span class="last-message">{{ chat.last_message[:50] if chat.last_message else 'Нет сообщений' }}{% if chat.last_message and chat.last_message|length > 50 %}...{% endif %}</span>
+                    {% if chat.unread_count > 0 %}
+                    <span class="unread-badge">{{ chat.unread_count }}</span>
+                    {% endif %}
+                </div>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon">💬</div>
+        <h2>У вас пока нет чатов</h2>
+        <p>Найдите друзей и начните общение!</p>
+        <a href="{{ url_for('friends_search') }}" class="btn btn-primary" style="margin-top: 20px;">
+            🔍 Найти друзей
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.chat-list-page {
+    color: white;
+    padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.chat-list-page h1 {
+    margin-bottom: 20px;
+}
+
+.chats-container {
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.chat-item {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    text-decoration: none;
+    color: #333;
+    border-bottom: 1px solid #e0e0e0;
+    transition: background 0.2s;
+}
+
+.chat-item:last-child {
+    border-bottom: none;
+}
+
+.chat-item:hover {
+    background: #f5f5f5;
+}
+
+.chat-avatar {
+    position: relative;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+    flex-shrink: 0;
+}
+
+.avatar-letter {
+    font-size: 28px;
+    font-weight: bold;
+    color: white;
+}
+
+.online-indicator {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    width: 14px;
+    height: 14px;
+    background: #28a745;
+    border: 2px solid white;
+    border-radius: 50%;
+}
+
+.chat-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.chat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.chat-name {
+    font-weight: bold;
+    font-size: 16px;
+    color: #0088cc;
+}
+
+.chat-time {
+    font-size: 12px;
+    color: #999;
+}
+
+.chat-preview {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.last-message {
+    font-size: 14px;
+    color: #666;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+}
+
+.unread-badge {
+    background: #0088cc;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: bold;
+    margin-left: 10px;
+}
+
+.empty-state {
+    background: white;
+    padding: 60px 40px;
+    border-radius: 15px;
+    text-align: center;
+    color: #333;
+}
+
+.empty-icon {
+    font-size: 64px;
+    margin-bottom: 20px;
+}
+
+.empty-state h2 {
+    color: #0088cc;
+    margin-bottom: 10px;
+}
+
+.empty-state p {
+    color: #666;
+}
+
+@media (max-width: 768px) {
+    .chat-list-page {
+        padding: 15px;
+    }
+
+    .chat-avatar {
+        width: 50px;
+        height: 50px;
+    }
+
+    .avatar-letter {
+        font-size: 24px;
+    }
+}
+</style>
+{% endblock %}

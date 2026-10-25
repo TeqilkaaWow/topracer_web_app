@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}Запись на посещение - TopRace Z7{% endblock %}
+
+{% block content %}
+<div class="booking-page">
+    <h1>📝 Запись на посещение</h1>
+
+    <div class="booking-info">
+        <p>Заполните форму ниже, и администратор свяжется с вами для подтверждения записи.</p>
+    </div>
+
+    <form method="POST" class="booking-form">
+        <div class="form-group">
+            <label for="text">Текст заявки</label>
+            <textarea id="text" name="text" required rows="6"
+                      placeholder="Укажите желаемую дату и время, количество человек, предпочтения по зоне..."
+                      class="form-input"></textarea>
+            <small class="form-help">Минимум 10 символов</small>
+        </div>
+
+        <div class="form-group">
+            <label>Выберите филиал</label>
+            <div class="branch-selector">
+                {% for key, branch in branches.items() %}
+                <label class="branch-option">
+                    <input type="radio" name="branch" value="{{ key }}" required>
+                    <div class="branch-card">
+                        <div class="branch-name">{{ branch.name }}</div>
+                        <div class="branch-address">{{ branch.address }}</div>
+                    </div>
+                </label>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="phone">Контактный телефон</label>
+            <input type="tel" id="phone" name="phone" required
+                   placeholder="+7 (912) 345-67-89" class="form-input"
+                   value="{{ request.form.phone if request.form.phone else '' }}">
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary btn-large">Отправить заявку</button>
+            <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">Отмена</a>
+        </div>
+    </form>
+</div>
+
+<style>
+.branch-selector {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.branch-option {
+    cursor: pointer;
+}
+
+.branch-option input {
+    display: none;
+}
+
+.branch-card {
+    padding: 20px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    transition: all 0.3s;
+    background: white;
+}
+
+.branch-option input:checked + .branch-card {
+    border-color: #0088cc;
+    background: rgba(0, 136, 204, 0.05);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 136, 204, 0.2);
+}
+
+.branch-name {
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #0088cc;
+}
+
+.branch-address {
+    font-size: 14px;
+    color: #6c757d;
+}
+</style>
+{% endblock %}

@@ -1,0 +1,23 @@
+# Данные авторизации (ПАРОЛИ!)
+users_auth.json
+credentials.json
+*.pem
+pyvenv.cfg
+
+# Логи
+*.log
+
+# Python
+__pycache__/
+*.pyc
+.env
+
+# IDE
+.idea/
+.vscode/
+
+# QR коды
+qr_codes/
+
+# Загруженные файлы
+static/uploads/

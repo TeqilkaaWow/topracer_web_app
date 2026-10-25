@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}TopRace Z7{% endblock %}</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <nav class="navbar desktop-nav">
+        <div class="container">
+            <div class="navbar-brand">
+                <a href="{{ url_for('index') }}" class="brand-link">
+                    <span class="brand-icon">🏁</span>
+                    <span class="brand-text">TopRace Z7</span>
+                </a>
+            </div>
+            {% if current_user.is_authenticated %}
+            <div class="navbar-menu">
+                <a href="{{ url_for('dashboard') }}" class="nav-link">Главная</a>
+                <a href="{{ url_for('stats') }}" class="nav-link">Статистика</a>
+                <a href="{{ url_for('tournaments') }}" class="nav-link">Турниры</a>
+                <a href="{{ url_for('records') }}" class="nav-link">Рекорды</a>
+                {% if current_user.is_admin %}
+                <a href="{{ url_for('admin_panel') }}" class="nav-link admin-link">Админка</a>
+                {% endif %}
+                <a href="{{ url_for('logout') }}" class="nav-link">Выход</a>
+            </div>
+            <div class="navbar-user">
+                <a href="{{ url_for('edit_profile') }}" class="user-profile-link">
+                    {% if current_user.avatar_url %}
+                        <img src="{{ current_user.avatar_url }}" alt="Аватар" class="nav-avatar">
+                    {% else %}
+                        <div class="nav-avatar-default">
+                            {{ current_user.nickname[0]|upper if current_user.nickname else '?' }}
+                        </div>
+                    {% endif %}
+                </a>
+                <a href="{{ url_for('edit_profile') }}" class="username-link">{{ current_user.nickname }}</a>
+            </div>
+            {% else %}
+            <div class="navbar-menu">
+                <a href="{{ url_for('login') }}" class="nav-link">Вход</a>
+                <a href="{{ url_for('register') }}" class="nav-link">Регистрация</a>
+            </div>
+            {% endif %}
+        </div>
+    </nav>
+
+    {% if current_user.is_authenticated %}
+    <nav class="bottom-nav mobile-nav">
+        <a href="{{ url_for('dashboard') }}" class="bottom-nav-item">
+            <span class="bottom-nav-icon">🏠</span>
+            <span class="bottom-nav-label">Главная</span>
+        </a>
+        <a href="{{ url_for('chat_list') }}" class="bottom-nav-item">
+            <span class="bottom-nav-icon">💬</span>
+            <span class="bottom-nav-label">Чаты</span>
+        </a>
+        <a href="{{ url_for('stats') }}" class="bottom-nav-item">
+            <span class="bottom-nav-icon">📊</span>
+            <span class="bottom-nav-label">Статистика</span>
+        </a>
+        <a href="{{ url_for('tournaments') }}" class="bottom-nav-item">
+            <span class="bottom-nav-icon">🏆</span>
+            <span class="bottom-nav-label">Турниры</span>
+        </a>
+        <a href="{{ url_for('view_profile') }}" class="bottom-nav-item">
+            <span class="bottom-nav-icon">👤</span>
+            <span class="bottom-nav-label">Профиль</span>
+        </a>
+    </nav>
+    {% else %}
+    <nav class="bottom-nav mobile-nav">
+        <a href="{{ url_for('index') }}" class="bottom-nav-item">
+            <span class="bottom-nav-icon">🏠</span>
+            <span class="bottom-nav-label">Главная</span>
+        </a>
+        <a href="{{ url_for('login') }}" class="bottom-nav-item">
+            <span class="bottom-nav-icon">🔑</span>
+            <span class="bottom-nav-label">Вход</span>
+        </a>
+        <a href="{{ url_for('register') }}" class="bottom-nav-item">
+            <span class="bottom-nav-icon">📝</span>
+            <span class="bottom-nav-label">Регистрация</span>
+        </a>
+    </nav>
+    {% endif %}
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category if category != 'message' else 'info' }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer desktop-footer">
+        <div class="container">
+            <p>© 2026 TopRace Z7. Все права защищены.</p>
+        </div>
+    </footer>
+
+    <script src="/static/js/main.js"></script>
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

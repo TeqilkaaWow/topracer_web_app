@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Статистика - TopRace Z7{% endblock %}
+
+{% block content %}
+<div class="stats-page">
+    <h1>📊 Ваша статистика</h1>
+
+    <div class="profile-card">
+        <div class="profile-header">
+            <div class="profile-avatar">👤</div>
+            <div class="profile-info">
+                <h2>{{ nickname }}</h2>
+                <p class="profile-id">ID: #{{ tracerdb_id }}</p>
+            </div>
+        </div>
+
+        <div class="profile-stats">
+            <div class="profile-stat">
+                <div class="stat-number">{{ level }}</div>
+                <div class="stat-text">Уровень</div>
+            </div>
+            <div class="profile-stat">
+                <div class="stat-number">{{ total_visits }}</div>
+                <div class="stat-text">Посещений</div>
+            </div>
+            <div class="profile-stat">
+                <div class="stat-number">{{ topcoins }} TC</div>
+                <div class="stat-text">TopCoins</div>
+            </div>
+            <div class="profile-stat">
+                <div class="stat-number">{{ bonus_minutes }} мин</div>
+                <div class="stat-text">Бонусы</div>
+            </div>
+        </div>
+
+        <div class="progress-section">
+            <h3>📈 Прогресс до следующего уровня</h3>
+            <div class="progress-bar-container">
+                <div class="progress-bar" style="width: {{ progress.progress_percentage }}%">
+                    <span class="progress-text">{{ progress.visits_in_level }}/10</span>
+                </div>
+            </div>
+            <p class="progress-info">
+                {% if progress.visits_to_next > 0 %}
+                До уровня {{ progress.current_level + 1 }} осталось {{ progress.visits_to_next }} посещений
+                {% else %}
+                Поздравляем! Вы достигли нового уровня!
+                {% endif %}
+            </p>
+        </div>
+
+        {% if bonus_expiry %}
+        <div class="bonus-info">
+            <h3>⏰ Бонусные минуты</h3>
+            <p>Доступно: <strong>{{ bonus_minutes }} минут</strong></p>
+            <p>Срок действия: <strong>до {{ bonus_expiry }}</strong></p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

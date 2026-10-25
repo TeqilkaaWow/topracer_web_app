@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Назначение администратора - TopRace Z7{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card" style="max-width: 500px;">
+        <h1 class="auth-title">⬆️ Назначить администратора</h1>
+
+        <div class="alert alert-info">
+            Введите ID или телефон существующего пользователя, чтобы назначить его администратором.
+        </div>
+
+        <form method="POST" class="auth-form">
+            <div class="form-group">
+                <label for="identifier">ID или телефон пользователя *</label>
+                <input type="text" id="identifier" name="identifier" required
+                       placeholder="Например: 123 или +79123456789" class="form-input">
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary btn-block">Назначить администратором</button>
+                <a href="{{ url_for('admin_panel') }}" class="btn btn-secondary btn-block" style="margin-top: 10px;">Отмена</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

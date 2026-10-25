@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}Ваш QR-код - TopRace Z7{% endblock %}
+
+{% block content %}
+<div class="qr-page">
+    <h1>📱 Ваш QR-код</h1>
+
+    <div class="qr-card">
+        <div class="qr-container">
+            <img src="{{ url_for('qr_image', tracerdb_id=tracerdb_id) }}"
+                 alt="QR-код" class="qr-image"
+                 onerror="console.error('Ошибка загрузки QR-кода'); this.src='/static/images/qr-placeholder.png'">
+        </div>
+        <div class="qr-info">
+            <h2>{{ nickname }}</h2>
+            <p class="qr-id">TopRacer ID: <code>#{{ tracerdb_id }}</code></p>
+            <p class="qr-instruction">
+                Покажите этот QR-код администратору на чек-поинте<br>
+                для засчитывания посещения
+            </p>
+        </div>
+    </div>
+
+    <div class="qr-actions">
+        <button onclick="window.print()" class="btn btn-primary">🖨️ Распечатать</button>
+        <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">Назад</a>
+    </div>
+</div>
+
+<style>
+.qr-page {
+    color: white;
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.qr-page h1 {
+    margin-bottom: 30px;
+}
+
+.qr-card {
+    background: white;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    max-width: 500px;
+    margin: 0 auto 30px;
+    color: #333;
+}
+
+.qr-container {
+    margin-bottom: 30px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 10px;
+}
+
+.qr-image {
+    max-width: 100%;
+    height: auto;
+    border: 3px solid #0088cc;
+    border-radius: 10px;
+}
+
+.qr-info h2 {
+    color: #0088cc;
+    margin-bottom: 15px;
+}
+
+.qr-id {
+    font-size: 18px;
+    margin-bottom: 20px;
+}
+
+.qr-id code {
+    background: #f0f0f0;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.qr-instruction {
+    color: #666;
+    line-height: 1.6;
+}
+
+.qr-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+@media print {
+    .qr-actions, .navbar, .footer {
+        display: none;
+    }
+}
+</style>
+{% endblock %}

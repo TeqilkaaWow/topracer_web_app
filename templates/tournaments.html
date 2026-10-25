@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Турниры - TopRace Z7{% endblock %}
+
+{% block content %}
+<div class="tournaments-page">
+    <h1>🏆 Турниры</h1>
+    <p class="page-subtitle">Выберите турнир для регистрации и получите бонусы!</p>
+
+    <div class="bonus-banner">
+        <div class="bonus-icon">🎁</div>
+        <div class="bonus-text">
+            <strong>Бонус за регистрацию:</strong> +500 TopCoins и +30 бонусных минут!
+        </div>
+    </div>
+
+    <div class="tournaments-grid">
+        {% for key, tournament in tournaments.items() %}
+        <div class="tournament-card">
+            <div class="tournament-header">
+                <span class="tournament-emoji">{{ tournament.emoji }}</span>
+                <h2 class="tournament-name">{{ tournament.name }}</h2>
+            </div>
+            <div class="tournament-content">
+                <p class="tournament-desc">{{ tournament.description|safe }}</p>
+            </div>
+            <div class="tournament-footer">
+                <a href="{{ url_for('tournament_register', tournament_key=key) }}" class="btn btn-primary btn-block">
+                    {{ tournament.register_text }}
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

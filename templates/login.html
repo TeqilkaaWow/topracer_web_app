@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Вход - TopRace Z7{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <h1 class="auth-title">🔐 Вход в систему</h1>
+
+        <form method="POST" action="{{ url_for('login') }}" class="auth-form">
+            <div class="form-group">
+                <label for="phone">Номер телефона</label>
+                <input type="tel" id="phone" name="phone" required
+                       placeholder="+7 (912) 345-67-89" class="form-input">
+            </div>
+
+            <div class="form-group">
+                <label for="password">Пароль</label>
+                <input type="password" id="password" name="password" required
+                       class="form-input">
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block">Войти</button>
+        </form>
+
+                <div class="auth-footer">
+                <p>Нет аккаунта? <a href="{{ url_for('register') }}">Зарегистрироваться</a></p>
+                <p><a href="{{ url_for('forgot_password') }}" style="color: #0088cc;">Забыли пароль?</a></p>
+            </div>
+        </div>
+</div>
+{% endblock %}

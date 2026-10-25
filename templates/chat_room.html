@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block title %}Чат с {{ friend_nickname }} - TopRace Z7{% endblock %}
+
+{% block content %}
+<div class="tg-chat-wrapper">
+    <div class="tg-chat-header">
+        <a href="{{ url_for('chat_list') }}" class="tg-back-btn">← Назад</a>
+        <div class="tg-chat-partner">
+            <div class="tg-partner-avatar">
+                {% if friend_online %}
+                <span class="tg-online-dot"></span>
+                {% endif %}
+                <span class="tg-avatar-letter">{{ friend_nickname[0]|upper }}</span>
+            </div>
+            <div class="tg-partner-info">
+                <span class="tg-partner-name">{{ friend_nickname }}</span>
+                <span class="tg-partner-status {% if friend_online %}tg-online{% endif %}">
+                    {{ 'в сети' if friend_online else 'не в сети' }}
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="tg-messages-area" id="tg-messages-area">
+        {% for message in messages %}
+        <div class="tg-message {% if message.sender_id == current_user.id %}tg-mine{% else %}tg-theirs{% endif %}">
+            <div class="tg-bubble">
+                <div class="tg-msg-text">{{ message.message }}</div>
+                <div class="tg-msg-time">{{ message.created_at[11:16] if message.created_at else '' }}</div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="tg-input-area">
+        <form method="POST" action="{{ url_for('chat_send', friend_id=friend_id) }}" class="tg-input-form">
+            <input type="text" 
+                   name="message" 
+                   placeholder="Сообщение" 
+                   class="tg-input-field" 
+                   required 
+                   maxlength="1000" 
+                   autocomplete="off"
+                   id="tg-message-input">
+            <button type="submit" class="tg-send-btn">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                    <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                </svg>
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+const friendId = {{ friend_id }};
+const messagesArea = document.getElementById('tg-messages-area');
+let lastMessageId = {{ messages[-1].id if messages else 0 }};
+
+function loadNewMessages() {
+    fetch(`/chat/api/messages/${friendId}`)
+        .then(response => response.json())
+        .then(data => {
+            const statusEl = document.querySelector('.tg-partner-status');
+            if (statusEl) {
+                if (data.friend_online) {
+                    statusEl.textContent = 'в сети';
+                    statusEl.classList.add('tg-online');
+                    const dot = document.querySelector('.tg-online-dot');
+                    if (dot) dot.style.display = 'block';
+                } else {
+                    statusEl.textContent = 'не в сети';
+                    statusEl.classList.remove('tg-online');
+                    const dot = document.querySelector('.tg-online-dot');
+                    if (dot) dot.style.display = 'none';
+                }
+            }
+            if (data.messages.length > 0) {
+                const newLastId = data.messages[data.messages.length - 1].id;
+                if (newLastId !== lastMessageId) {
+                    lastMessageId = newLastId;
+                    renderMessages(data.messages);
+                }
+            }
+        })
+        .catch(error => console.error('Ошибка:', error));
+}
+
+function renderMessages(messages) {
+    messagesArea.innerHTML = '';
+    messages.forEach(msg => {
+        const msgDiv = document.createElement('div');
+        msgDiv.className = `tg-message ${msg.is_mine ? 'tg-mine' : 'tg-theirs'}`;
+        msgDiv.innerHTML = `
+            <div class="tg-bubble">
+                <div class="tg-msg-text">${escapeHtml(msg.message)}</div>
+                <div class="tg-msg-time">${msg.created_at.substring(11, 16)}</div>
+            </div>
+        `;
+        messagesArea.appendChild(msgDiv);
+    });
+    scrollToBottom();
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+function scrollToBottom() {
+    messagesArea.scrollTop = messagesArea.scrollHeight;
+}
+
+setInterval(loadNewMessages, 10000);
+window.onload = scrollToBottom;
+
+document.getElementById('tg-message-input').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        this.form.submit();
+    }
+});
+
+if ('visualViewport' in window) {
+    window.visualViewport.addEventListener('resize', function() {
+        setTimeout(scrollToBottom, 100);
+    });
+}
+</script>
+{% endblock %}

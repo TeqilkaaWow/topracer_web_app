@@ -1,0 +1,243 @@
+{% extends "base.html" %}
+
+{% block title %}{{ nickname }} - TopRace Z7{% endblock %}
+
+{% block content %}
+<div class="user-profile-view">
+    <div class="profile-header-card">
+        <div class="profile-avatar-large">
+            {% if avatar_url %}
+                <img src="{{ avatar_url }}" alt="Аватар">
+            {% else %}
+                <span>{{ nickname[0]|upper if nickname else '?' }}</span>
+            {% endif %}
+        </div>
+        <h1>{{ nickname }}</h1>
+        <p class="profile-id">TopRacer ID: #{{ tracerdb_id }}</p>
+        {% if is_admin %}
+        <span class="badge badge-admin"> Администратор</span>
+        {% endif %}
+
+        {% if is_friend %}
+        <form method="POST" action="{{ url_for('remove_friend', user_id=user_id) }}" style="margin-top: 20px;">
+            <button type="submit" class="btn btn-secondary btn-block" onclick="return confirm('Удалить из друзей?')">
+                ✕ Удалить из друзей
+            </button>
+        </form>
+        {% else %}
+        <form method="POST" action="{{ url_for('add_friend', user_id=user_id) }}" style="margin-top: 20px;">
+            <button type="submit" class="btn btn-primary btn-block">
+                 Добавить в друзья
+            </button>
+        </form>
+        {% endif %}
+    </div>
+
+    <div class="profile-stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon">💰</div>
+            <div class="stat-value">{{ topcoins }} TC</div>
+            <div class="stat-label">TopCoins</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">⏰</div>
+            <div class="stat-value">{{ bonus_minutes }} мин</div>
+            <div class="stat-label">Бонусные минуты</div>
+            <div class="stat-sub">до {{ bonus_expiry }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">🏆</div>
+            <div class="stat-value">{{ level }}</div>
+            <div class="stat-label">Уровень</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">📍</div>
+            <div class="stat-value">{{ visits }}</div>
+            <div class="stat-label">Посещений</div>
+        </div>
+    </div>
+
+    <div class="profile-info">
+        <h3>📋 Информация</h3>
+        <div class="info-item">
+            <span class="info-label">📞 Телефон:</span>
+            <span class="info-value">{{ phone }}</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label"> Регистрация:</span>
+            <span class="info-value">{{ reg_date }}</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">🕐 Последний визит:</span>
+            <span class="info-value">{{ last_visit or 'Ещё не было' }}</span>
+        </div>
+    </div>
+
+    <a href="{{ url_for('my_friends') }}" class="btn btn-secondary btn-block" style="margin-top: 20px;">
+        ← Назад к друзьям
+    </a>
+</div>
+
+<style>
+.user-profile-view {
+    color: white;
+    padding: 20px;
+}
+
+.profile-header-card {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.profile-avatar-large {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    border: 4px solid #0088cc;
+    overflow: hidden;
+}
+
+.profile-avatar-large img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profile-avatar-large span {
+    font-size: 64px;
+    font-weight: bold;
+    color: white;
+}
+
+.profile-header-card h1 {
+    color: #0088cc;
+    margin: 10px 0;
+    font-size: 28px;
+}
+
+.profile-id {
+    color: #666;
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+.badge-admin {
+    display: inline-block;
+    background: #ffc107;
+    color: #333;
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.profile-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.stat-card {
+    background: white;
+    padding: 25px 20px;
+    border-radius: 12px;
+    text-align: center;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 140px;
+    box-sizing: border-box;
+}
+
+.stat-icon {
+    font-size: 36px;
+    margin-bottom: 10px;
+    line-height: 1;
+}
+
+.stat-value {
+    font-size: 28px;
+    font-weight: bold;
+    color: #0088cc;
+    margin-bottom: 5px;
+    line-height: 1.2;
+}
+
+.stat-label {
+    font-size: 14px;
+    color: #666;
+    line-height: 1.3;
+}
+
+.stat-sub {
+    font-size: 12px;
+    color: #999;
+    margin-top: 5px;
+    line-height: 1.2;
+}
+
+.profile-info {
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.profile-info h3 {
+    color: #0088cc;
+    margin-bottom: 20px;
+    font-size: 20px;
+}
+
+.info-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.info-item:last-child {
+    border-bottom: none;
+}
+
+.info-label {
+    font-weight: 500;
+    color: #666;
+    font-size: 15px;
+}
+
+.info-value {
+    color: #333;
+    font-weight: bold;
+    font-size: 15px;
+    text-align: right;
+}
+
+@media (max-width: 768px) {
+    .profile-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    .stat-card {
+        min-height: 120px;
+        padding: 20px 15px;
+    }
+}
+</style>
+{% endblock %}

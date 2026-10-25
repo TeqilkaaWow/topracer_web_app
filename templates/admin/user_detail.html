@@ -1,0 +1,426 @@
+{% extends "base.html" %}
+
+{% block title %}{{ nickname }} - Карточка пользователя{% endblock %}
+
+{% block content %}
+<div class="user-detail-page">
+    <div class="back-nav">
+        <a href="{{ url_for('admin_users_list') }}" class="btn btn-secondary btn-small">← К списку</a>
+    </div>
+
+    <h1>👤 Карточка пользователя</h1>
+
+    <div class="user-header">
+        <div class="user-avatar-large">
+            {{ nickname[0]|upper if nickname else '?' }}
+        </div>
+        <div class="user-main-info">
+            <h2>{{ nickname }}</h2>
+            <p class="user-id">TopRacer ID: #{{ tracerdb_id }}</p>
+            {% if is_admin %}
+            <span class="badge badge-admin">👑 Администратор</span>
+            {% else %}
+            <span class="badge badge-user">👤 Пользователь</span>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="info-grid">
+        <div class="info-card">
+            <div class="info-icon">📞</div>
+            <div class="info-label">Телефон</div>
+            <div class="info-value">{{ phone }}</div>
+        </div>
+        <div class="info-card">
+            <div class="info-icon">🏆</div>
+            <div class="info-label">Уровень</div>
+            <div class="info-value">{{ level }}</div>
+        </div>
+        <div class="info-card">
+            <div class="info-icon"></div>
+            <div class="info-label">Посещений</div>
+            <div class="info-value">{{ visits }}</div>
+        </div>
+        <div class="info-card">
+            <div class="info-icon">📅</div>
+            <div class="info-label">Регистрация</div>
+            <div class="info-value">{{ reg_date }}</div>
+        </div>
+        <div class="info-card">
+            <div class="info-icon">⏰</div>
+            <div class="info-label">Последний визит</div>
+            <div class="info-value">{{ last_visit or 'Ещё не было' }}</div>
+        </div>
+        {% if telegram_id %}
+        <div class="info-card">
+            <div class="info-icon">📱</div>
+            <div class="info-label">Telegram ID</div>
+            <div class="info-value"><code>{{ telegram_id }}</code></div>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="balance-section">
+        <h2>💰 Балансы</h2>
+        <div class="balance-cards">
+            <div class="balance-card coins">
+                <div class="balance-icon">💎</div>
+                <div class="balance-value">{{ topcoins }} TC</div>
+                <div class="balance-label">TopCoins</div>
+            </div>
+            <div class="balance-card minutes">
+                <div class="balance-icon">⏰</div>
+                <div class="balance-value">{{ bonus_minutes }} мин</div>
+                <div class="balance-label">Бонусные минуты</div>
+                <div class="balance-expiry">до {{ bonus_expiry or 'не указано' }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="actions-section">
+        <h2>⚡ Действия с балансом</h2>
+        <div class="actions-grid">
+            <!-- Начисление TopCoins -->
+            <div class="action-box">
+                <h3>💎 Начислить TopCoins</h3>
+                <form method="POST" action="{{ url_for('admin_add_coins', user_id=user_id) }}" class="action-form">
+                    <input type="number" name="amount" min="1" required placeholder="Сумма" class="form-input">
+                    <button type="submit" class="btn btn-success">Начислить</button>
+                </form>
+            </div>
+
+            <!-- Списание TopCoins -->
+            <div class="action-box">
+                <h3>💸 Списать TopCoins</h3>
+                <form method="POST" action="{{ url_for('admin_spend_coins', user_id=user_id) }}" class="action-form">
+                    <input type="number" name="amount" min="1" max="{{ topcoins }}" required placeholder="Сумма" class="form-input">
+                    <button type="submit" class="btn btn-danger">Списать</button>
+                </form>
+            </div>
+
+            <!-- Начисление минут -->
+            <div class="action-box">
+                <h3>⏰ Начислить минуты</h3>
+                <form method="POST" action="{{ url_for('admin_add_minutes', user_id=user_id) }}" class="action-form">
+                    <input type="number" name="minutes" min="1" required placeholder="Минуты" class="form-input">
+                    <button type="submit" class="btn btn-success">Начислить</button>
+                </form>
+            </div>
+
+            <!-- Списание минут -->
+            <div class="action-box">
+                <h3>⏱️ Списать минуты</h3>
+                <form method="POST" action="{{ url_for('admin_spend_minutes', user_id=user_id) }}" class="action-form">
+                    <input type="number" name="minutes" min="1" max="{{ bonus_minutes }}" required placeholder="Минуты" class="form-input">
+                    <button type="submit" class="btn btn-danger">Списать</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="user-actions">
+    <a href="{{ url_for('admin_add_lap_time', user_id=user_id) }}" class="btn btn-primary">
+        ⏱️ Записать время круга
+    </a>
+    <a href="{{ url_for('admin_users_list') }}" class="btn btn-secondary">
+        ← Назад к списку
+    </a>
+</div>
+
+    {% if history %}
+    <div class="history-section">
+        <h2>📋 Последние посещения</h2>
+        <div class="history-list">
+            {% for visit in history %}
+            <div class="history-item">
+                <div class="history-date">{{ visit.get('Дата', '') }}</div>
+                <div class="history-scanner">{{ visit.get('Scanner Username', 'Неизвестно') }}</div>
+                {% if visit.get('Администратор', '') == 'Да' %}
+                <span class="badge badge-admin">Админ</span>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.user-detail-page {
+    color: white;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.back-nav {
+    margin-bottom: 20px;
+}
+
+.btn-small {
+    padding: 8px 16px;
+    font-size: 14px;
+}
+
+.user-detail-page h1 {
+    margin-bottom: 30px;
+}
+
+.user-header {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    margin-bottom: 25px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.user-avatar-large {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 48px;
+    font-weight: bold;
+    border: 4px solid #0088cc;
+    flex-shrink: 0;
+}
+
+.user-main-info h2 {
+    color: #0088cc;
+    margin: 0 0 10px 0;
+    font-size: 28px;
+}
+
+.user-id {
+    color: #666;
+    margin: 0 0 10px 0;
+    font-size: 16px;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.info-card {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.info-icon {
+    font-size: 32px;
+    margin-bottom: 10px;
+}
+
+.info-label {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+.info-value {
+    color: #333;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.info-value code {
+    background: #f0f0f0;
+    padding: 3px 8px;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.balance-section, .actions-section, .history-section {
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    margin-bottom: 25px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.balance-section h2, .actions-section h2, .history-section h2 {
+    color: #0088cc;
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+.balance-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.balance-card {
+    padding: 25px;
+    border-radius: 12px;
+    text-align: center;
+}
+
+.balance-card.coins {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.balance-card.minutes {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+}
+
+.balance-icon {
+    font-size: 48px;
+    margin-bottom: 10px;
+}
+
+.balance-value {
+    font-size: 32px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.balance-label {
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+.balance-expiry {
+    font-size: 12px;
+    opacity: 0.8;
+    margin-top: 5px;
+}
+
+.actions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+}
+
+.action-box {
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    border: 2px solid #e0e0e0;
+}
+
+.action-box h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #333;
+    font-size: 16px;
+}
+
+.action-form {
+    display: flex;
+    gap: 10px;
+}
+
+.action-form .form-input {
+    flex: 1;
+    padding: 10px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.action-form .btn {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    color: white;
+    transition: all 0.3s;
+}
+
+.btn-success {
+    background: #28a745;
+}
+
+.btn-success:hover {
+    background: #218838;
+}
+
+.btn-danger {
+    background: #dc3545;
+}
+
+.btn-danger:hover {
+    background: #c82333;
+}
+
+.history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.history-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 12px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #0088cc;
+}
+
+.history-date {
+    font-weight: bold;
+    color: #333;
+    min-width: 140px;
+}
+
+.history-scanner {
+    flex: 1;
+    color: #666;
+}
+
+.badge {
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.badge-admin {
+    background: #ffc107;
+    color: #333;
+}
+
+.badge-user {
+    background: #6c757d;
+    color: white;
+}
+
+@media (max-width: 768px) {
+    .user-header {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .info-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .actions-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .balance-cards {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}

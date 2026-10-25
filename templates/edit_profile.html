@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+
+{% block title %}Редактирование профиля - TopRace Z7{% endblock %}
+
+{% block content %}
+<div class="profile-edit-container">
+    <div class="profile-edit-card">
+        <h1 class="profile-edit-title">✏️ Редактирование профиля</h1>
+
+        <!-- Секция аватара -->
+        <div class="avatar-section">
+            <div class="avatar-preview">
+                {% if current_user.avatar_url %}
+                    <img src="{{ current_user.avatar_url }}" alt="Аватар" class="current-avatar">
+                {% else %}
+                    <div class="default-avatar">
+                        <span class="avatar-letter">{{ current_user.nickname[0]|upper if current_user.nickname else '?' }}</span>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="avatar-actions">
+                <form method="POST" action="{{ url_for('upload_avatar') }}" enctype="multipart/form-data" id="upload-form">
+                    <label for="avatar" class="btn btn-primary btn-small" style="cursor: pointer;">
+                        📷 Загрузить фото
+                    </label>
+                    <input type="file" id="avatar" name="avatar"
+                           accept="image/png,image/jpeg,image/jpg,image/gif,image/webp"
+                           style="display: none;"
+                           onchange="document.getElementById('upload-form').submit()">
+                    <small class="form-help">PNG, JPG, GIF, WEBP (макс. 5 МБ)</small>
+                </form>
+
+                {% if current_user.avatar_url %}
+                <form method="POST" action="{{ url_for('remove_avatar') }}" style="margin-top: 10px;">
+                    <button type="submit" class="btn btn-danger btn-small"
+                            onclick="return confirm('Удалить аватар?')">
+                        🗑️ Удалить фото
+                    </button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Форма редактирования данных -->
+        <form method="POST" class="auth-form" style="margin-top: 30px;">
+            <div class="form-group">
+                <label for="nickname">Никнейм</label>
+                <input type="text" id="nickname" name="nickname" required
+                       placeholder="Ваш игровой ник" class="form-input"
+                       value="{{ nickname }}">
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Номер телефона</label>
+                <input type="tel" id="phone" name="phone" required
+                       placeholder="+7 (912) 345-67-89" class="form-input"
+                       value="{{ phone }}">
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary btn-block">Сохранить изменения</button>
+                <a href="{{ url_for('dashboard') }}" class="btn btn-secondary btn-block" style="margin-top: 10px;">Отмена</a>
+            </div>
+        </form>
+
+        <div style="margin-top: 20px; text-align: center;">
+            <a href="{{ url_for('change_password') }}" class="link-muted">🔐 Сменить пароль</a>
+        </div>
+    </div>
+</div>
+
+<style>
+.profile-edit-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: calc(100vh - 200px);
+    padding: 40px 20px;
+}
+
+.profile-edit-card {
+    background: white;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 500px;
+}
+
+.profile-edit-title {
+    text-align: center;
+    color: #0088cc;
+    margin-bottom: 30px;
+    font-size: 28px;
+}
+
+.avatar-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
+
+.avatar-preview {
+    margin-bottom: 20px;
+}
+
+.current-avatar {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #0088cc;
+    box-shadow: 0 4px 12px rgba(0,136,204,0.3);
+}
+
+.default-avatar {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 4px solid #0088cc;
+    box-shadow: 0 4px 12px rgba(0,136,204,0.3);
+}
+
+.avatar-letter {
+    font-size: 64px;
+    font-weight: bold;
+    color: white;
+}
+
+.avatar-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+}
+
+.btn-small {
+    padding: 8px 16px;
+    font-size: 14px;
+}
+
+.btn-danger {
+    background: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-danger:hover {
+    background: #c82333;
+    transform: translateY(-2px);
+}
+
+.link-muted {
+    color: #6c757d;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.link-muted:hover {
+    color: #0088cc;
+}
+
+.form-help {
+    display: block;
+    margin-top: 8px;
+    font-size: 12px;
+    color: #6c757d;
+    text-align: center;
+}
+
+@media (max-width: 768px) {
+    .profile-edit-card {
+        padding: 25px;
+    }
+
+    .current-avatar, .default-avatar {
+        width: 120px;
+        height: 120px;
+    }
+
+    .avatar-letter {
+        font-size: 48px;
+    }
+}
+</style>
+{% endblock %}

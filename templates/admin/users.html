@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Пользователи - TopRace Z7{% endblock %}
+
+{% block content %}
+<div class="admin-users">
+    <h1>👤 Список пользователей</h1>
+
+    <div class="users-table-container">
+        <table class="users-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Никнейм</th>
+                    <th>Телефон</th>
+                    <th>Уровень</th>
+                    <th>Посещений</th>
+                    <th>TopCoins</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>{{ user.get('TopRacerDataBase ID ', 'N/A') }}</td>
+                    <td>{{ user.get('Ник-нейм ', 'Неизвестно') }}</td>
+                    <td>{{ user.get('Номер телефона ', 'Не указан') }}</td>
+                    <td>{{ user.get('Уровень ', 1) }}</td>
+                    <td>{{ user.get('Колличество посещений ', 0) }}</td>
+                    <td>{{ user.get('TopCoins ', '0 TC') }}</td>
+                    <td>
+                        <a href="{{ url_for('admin_user_detail', user_id=user.get('User ID', 0)) }}"
+                           class="btn btn-small">Подробнее</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

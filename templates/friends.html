@@ -1,0 +1,209 @@
+{% extends "base.html" %}
+
+{% block title %}Мои друзья - TopRace Z7{% endblock %}
+
+{% block content %}
+<div class="my-friends-page">
+    <h1>👥 Мои друзья</h1>
+
+    <div class="friends-header">
+        <a href="{{ url_for('friends_search') }}" class="btn btn-primary">
+            🔍 Найти новых друзей
+        </a>
+    </div>
+
+    {% if friends %}
+    <div class="friends-count">Всего друзей: <strong>{{ friends|length }}</strong></div>
+
+    <div class="friends-list">
+        {% for friend in friends %}
+        <div class="friend-item">
+            <div class="friend-avatar">
+                {% if friend.avatar_url %}
+                    <img src="{{ friend.avatar_url }}" alt="{{ friend.nickname }}">
+                {% else %}
+                    <span>{{ friend.nickname[0]|upper if friend.nickname else '?' }}</span>
+                {% endif %}
+            </div>
+            <div class="friend-info">
+                <h3>{{ friend.nickname }}</h3>
+                <p class="friend-id">TopRacer ID: #{{ friend.id }}</p>
+            </div>
+            <div class="friend-actions">
+                <a href="{{ url_for('view_profile') }}?user_id={{ friend.id }}" class="btn btn-small btn-secondary">
+                     Профиль
+                </a>
+                <form method="POST" action="{{ url_for('remove_friend', user_id=friend.id) }}" style="display: inline;">
+                    <button type="submit" class="btn btn-small btn-danger"
+                            onclick="return confirm('Удалить {{ friend.nickname }} из друзей?')">
+                        ✕
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon">👥</div>
+        <h2>У вас пока нет друзей</h2>
+        <p>Найдите друзей по нику и добавьте их!</p>
+        <a href="{{ url_for('friends_search') }}" class="btn btn-primary" style="margin-top: 20px;">
+            🔍 Найти друзей
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.my-friends-page {
+    color: white;
+    padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.my-friends-page h1 {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.friends-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.friends-count {
+    background: white;
+    padding: 15px 25px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    color: #333;
+    font-size: 16px;
+    text-align: center;
+}
+
+.friends-count strong {
+    color: #0088cc;
+    font-size: 20px;
+}
+
+.friends-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.friend-item {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    color: #333;
+    transition: transform 0.2s;
+}
+
+.friend-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.friend-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    flex-shrink: 0;
+    border: 3px solid #0088cc;
+}
+
+.friend-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.friend-avatar span {
+    font-size: 28px;
+    font-weight: bold;
+    color: white;
+}
+
+.friend-info {
+    flex: 1;
+}
+
+.friend-info h3 {
+    margin: 0 0 5px 0;
+    font-size: 18px;
+    color: #0088cc;
+}
+
+.friend-id {
+    margin: 0;
+    font-size: 14px;
+    color: #6c757d;
+}
+
+.friend-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-danger {
+    background: #dc3545;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-danger:hover {
+    background: #c82333;
+}
+
+.empty-state {
+    background: white;
+    padding: 60px 40px;
+    border-radius: 15px;
+    text-align: center;
+    color: #333;
+}
+
+.empty-icon {
+    font-size: 80px;
+    margin-bottom: 20px;
+}
+
+.empty-state h2 {
+    color: #0088cc;
+    margin-bottom: 10px;
+}
+
+.empty-state p {
+    color: #6c757d;
+    font-size: 16px;
+}
+
+@media (max-width: 768px) {
+    .friend-item {
+        flex-wrap: wrap;
+    }
+
+    .friend-info {
+        flex: 1 1 calc(100% - 90px);
+    }
+
+    .friend-actions {
+        width: 100%;
+        margin-top: 15px;
+        justify-content: flex-end;
+    }
+}
+</style>
+{% endblock %}

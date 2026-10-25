@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}Создание администратора - TopRace Z7{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card" style="max-width: 500px;">
+        <h1 class="auth-title"> Создание администратора</h1>
+
+        <form method="POST" class="auth-form">
+            <div class="form-group">
+                <label for="nickname">Никнейм *</label>
+                <input type="text" id="nickname" name="nickname" required
+                       placeholder="Имя администратора" class="form-input">
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Номер телефона *</label>
+                <input type="tel" id="phone" name="phone" required
+                       placeholder="+7 (912) 345-67-89" class="form-input">
+            </div>
+
+            <div class="form-group">
+                <label for="password">Пароль *</label>
+                <input type="password" id="password" name="password" required
+                       minlength="6" class="form-input">
+            </div>
+
+            <div class="form-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" name="is_superuser">
+                    <span>Супер-администратор (может создавать других админов)</span>
+                </label>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary btn-block">Создать администратора</button>
+                <a href="{{ url_for('admin_panel') }}" class="btn btn-secondary btn-block" style="margin-top: 10px;">Отмена</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+</style>
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Админ-панель - TopRace Z7{% endblock %}
+
+{% block content %}
+<div class="admin-dashboard">
+    <h1>👑 Панель администратора</h1>
+
+    <div class="admin-stats">
+        <div class="admin-stat-card">
+            <div class="stat-icon">👥</div>
+            <div class="stat-value">{{ total_users }}</div>
+            <div class="stat-label">Всего геймеров</div>
+        </div>
+        <div class="admin-stat-card">
+            <div class="stat-icon">🎯</div>
+            <div class="stat-value">{{ total_visits }}</div>
+            <div class="stat-label">Всего посещений</div>
+        </div>
+        <div class="admin-stat-card">
+            <div class="stat-icon">📊</div>
+            <div class="stat-value">{{ (total_visits / total_users)|round(1) if total_users > 0 else 0 }}</div>
+            <div class="stat-label">Среднее посещений</div>
+        </div>
+    </div>
+
+    <div class="admin-actions">
+        <h2>⚡ Действия</h2>
+        <div class="actions-grid">
+            <a href="{{ url_for('admin_scan') }}" class="admin-action-card">
+                <div class="action-icon">📷</div>
+                <div class="action-text">Сканировать</div>
+            </a>
+            <a href="{{ url_for('admin_users') }}" class="admin-action-card">
+                <div class="action-icon">👤</div>
+                <div class="action-text">Пользователи</div>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

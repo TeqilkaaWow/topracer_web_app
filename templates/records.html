@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Рекорды Gran Turismo - TopRace Z7{% endblock %}
+
+{% block content %}
+<div class="records-page">
+    <h1>🏎️ Рекорды Gran Turismo</h1>
+
+    <div class="tracks-selector">
+        <h2>Выберите трассу:</h2>
+        <div class="tracks-grid">
+            {% for key, track in tracks.items() %}
+            <a href="{{ url_for('track_records', track_key=key) }}"
+               class="track-card {% if current_track == key %}active{% endif %}">
+                <div class="track-emoji">{{ track.emoji }}</div>
+                <div class="track-name">{{ track.name }}</div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+
+    {% if current_track and records %}
+    <div class="records-list">
+        <h2>{{ track.emoji }} {{ track.name }} - ТОП-10</h2>
+        <div class="records-table">
+            {% for record in records %}
+            <div class="record-item {% if loop.index <= 3 %}top-{{ loop.index }}{% endif %}">
+                <div class="record-position">
+                    {% if loop.index == 1 %}🥇
+                    {% elif loop.index == 2 %}🥈
+                    {% elif loop.index == 3 %}🥉
+                    {% else %}{{ loop.index }}
+                    {% endif %}
+                </div>
+                <div class="record-info">
+                    <div class="record-name">{{ record.username }}</div>
+                    <div class="record-date">{{ record.date }}</div>
+                </div>
+                <div class="record-time">{{ record.formatted }}</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% elif current_track %}
+    <div class="empty-state">
+        <div class="empty-icon">🏁</div>
+        <h2>Нет записанных кругов</h2>
+        <p>Будьте первым, кто покажет время на этой трассе!</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

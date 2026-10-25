@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}История посещений - TopRace Z7{% endblock %}
+
+{% block content %}
+<div class="history-page">
+    <h1>📋 История посещений</h1>
+
+    <div class="history-summary">
+        <div class="summary-item">
+            <span class="summary-label">Всего посещений:</span>
+            <span class="summary-value">{{ total }}</span>
+        </div>
+    </div>
+
+    {% if history %}
+    <div class="history-list">
+        {% for visit in history %}
+        <div class="history-item">
+            <div class="history-date">
+                <div class="date-icon">📅</div>
+                <div class="date-text">{{ visit.get('Дата', 'Неизвестно') }}</div>
+            </div>
+            <div class="history-scanner">
+                <div class="scanner-icon">👤</div>
+                <div class="scanner-text">{{ visit.get('Scanner Username', 'Неизвестно') }}</div>
+            </div>
+            {% if visit.get('Администратор') == 'Да' %}
+            <div class="history-badge admin-badge">Админ</div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon">📭</div>
+        <h2>История пуста</h2>
+        <p>Покажите ваш QR-код на чек-поинте, чтобы начать копить историю посещений!</p>
+        <a href="{{ url_for('qr_code') }}" class="btn btn-primary">Показать QR-код</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
